@@ -40,7 +40,7 @@ Zum Live-Gang `stufe` auf `live` stellen, `--accept` ausführen, in GitHub `DEPL
    Danach committen. **Nach jeder eigenen Änderung an Aufbau, Design oder Technik wieder `--accept` ausführen**, sonst blockiert die Prüfung.
 4. Privates GitHub-Repo anlegen (dir gehörend), pushen, Kunde als Collaborator (Write) einladen.
 5. Variablen und Secrets setzen (siehe Kopf von `deploy.yml`). SSH-Schlüssel nur für diesen Zweck, Zielordner = nur die Webseite.
-6. Beim Kunden: Git, Python 3 und Claude (Desktop-App, Code-Tab) installieren, Repo klonen (z. B. mit GitHub Desktop) und den Ordner in Claude öffnen. Das Plugin wird über `.claude/settings.json` vorgeschlagen. Der Kunde bestätigt die Installation einmal.
+6. Beim Kunden: Git, Python 3 und Claude (Desktop-App, Code-Tab) installieren, Repo klonen (z. B. mit GitHub Desktop) und den Ordner in Claude öffnen. Dann das Plugin einmalig von Hand installieren: in der App links **Plugins** → Marketplace hinzufügen → `onechrismos/kmu-website-kit` → Plugin **kmu-website** installieren → App neu starten. Die Desktop-App schlägt es über `.claude/settings.json` nicht selbst vor (getestet 24.11.2026). Danach eine **neue** Sitzung im Ordner starten, lokal und nicht in der Cloud.
 
 ## Betreuer-Modus auf deinem Rechner
 In deinen persönlichen Claude-Einstellungen (`~/.claude/settings.json`) `"env": { "KMU_OWNER": "1" }` setzen. Dann sperrt der Hook bei dir nichts, und `--accept` funktioniert.
@@ -54,5 +54,5 @@ In deinen persönlichen Claude-Einstellungen (`~/.claude/settings.json`) `"env":
 3. Ist der Server selbst kaputt: `~/kmu-backups/*.tgz` auf dem Server (die letzten 10 Stände vor jedem Upload).
 
 ## Noch nicht erledigt
-- Noch nicht in einer echten Claude-Code-Installation als Plugin installiert (Hook-Aufruf über `${CLAUDE_PLUGIN_ROOT}` und automatische Plugin-Aktivierung über `.claude/settings.json` noch prüfen).
+- Getestet am 24.11.2026 (Desktop-App, Windows): Plugin-Installation, Skill, Hook (sperrt Datei-Änderungen per Shell), Veröffentlichen, Rückgängig, Notfall-Rollback, Deploy zu cyon.
 - Ideen für später: Bilder austauschen (mit automatischer WebP-Umwandlung), wiederholbare Blöcke (Team, FAQ, News) über JSON statt HTML.
