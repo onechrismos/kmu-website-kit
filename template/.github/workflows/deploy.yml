@@ -4,7 +4,7 @@
 #
 # Einmalig einrichten (GitHub -> Settings -> Secrets and variables -> Actions):
 #   Variables: KMU_KIT_REPO      z. B. dein-github/kmu-website-kit
-#              DEPLOY_HOST       z. B. s076.cyon.net
+#              DEPLOY_HOST       z. B. s0XX.cyon.net
 #              DEPLOY_USER       cyon-Benutzername
 #              DEPLOY_PATH       Zielordner auf dem Server, z. B. public_html  (nur die Webseite, nichts anderes!)
 #              DEPLOY_MODE       optional: "vorschau" = Testziel (noindex, Platzhalter erlaubt). Leer = live.

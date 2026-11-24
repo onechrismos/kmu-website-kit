@@ -25,7 +25,7 @@ Das Repo ist in beiden Fällen gleich. Ein Wechsel heisst: Feld umstellen (danac
 - Alles andere (neue Abschnitte, Bilder, Design, Formular, SEO-Technik) → Anfrage an dich. Der Skill formuliert sie.
 
 ## Neues Kunden-Projekt einrichten
-1. Projekt so aufbauen wie `_kunden/schwereag/`: `content/`, `pages/`, `static/`, `build.py` (mit `--prod`), Ausgabe nach `dist/`. Firmendaten im Build aus `content/firma.json` lesen. Die FAQ-JSON-LD per `{{FAQ_LD}}` aus den sichtbaren FAQ erzeugen.
+1. Projekt so aufbauen wie dein Prototyp-Projekt: `content/`, `pages/`, `static/`, `build.py` (mit `--prod`), Ausgabe nach `dist/`. Firmendaten im Build aus `content/firma.json` lesen. Die FAQ-JSON-LD per `{{FAQ_LD}}` aus den sichtbaren FAQ erzeugen.
 2. Inhalt von `template/` ins Projekt kopieren. `.kmu/site.json` (name, domain, betreuer), `CLAUDE.md` und in `.claude/settings.json` das GitHub-Konto des Kits anpassen.
 3. Stand festschreiben (nur du, im Betreuer-Modus):
    ```
@@ -49,5 +49,5 @@ In deinen persönlichen Claude-Einstellungen (`~/.claude/settings.json`) `"env":
 
 ## Noch nicht erledigt
 - Noch nicht in einer echten Claude-Code-Installation als Plugin installiert (Hook-Aufruf über `${CLAUDE_PLUGIN_ROOT}` und automatische Plugin-Aktivierung über `.claude/settings.json` noch prüfen).
-- GitHub Action noch nicht gegen cyon gelaufen. Zu prüfen: rsync und ein dauerhafter SSH-Schlüssel für den Account (beim chrismos-Account gab es bisher nur 15-Minuten-Schlüssel).
+- GitHub Action noch nicht gegen cyon gelaufen. Zu prüfen: rsync und ein dauerhafter SSH-Schlüssel für den Account.
 - Ideen für später: Bilder austauschen (mit automatischer WebP-Umwandlung), wiederholbare Blöcke (Team, FAQ, News) über JSON statt HTML.
