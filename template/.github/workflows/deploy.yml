@@ -37,8 +37,15 @@ jobs:
       - name: Webseite holen
         uses: actions/checkout@v5
         with:
-          ref: ${{ inputs.ref || github.sha }}
-          fetch-depth: 2
+          fetch-depth: 0
+
+      - name: Gewünschte Version wählen
+        if: ${{ inputs.ref != '' }}
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          case "$REF" in *[!0-9a-fA-F]*) echo "Bitte nur das Versions-Kürzel (z. B. a1b2c3d) eintragen."; exit 1;; esac
+          git checkout --quiet "$REF" && echo "Veröffentliche Version $(git log -1 --format='%h – %s')"
 
       - name: Prüf-Kit holen
         uses: actions/checkout@v5
