@@ -5,7 +5,7 @@
   "betrieb": "betreuer",
   "stufe": "live",
   "vorschau_url": "",
-  "betreuer": "NAME · E-MAIL · TELEFON des Webseiten-Betreuers",
+  "betreuer": "Kontakt des Betreuers, z. B. E-Mail (Telefon optional)",
   "build": {
     "vorschau": "python build.py",
     "live": "python build.py --prod"
