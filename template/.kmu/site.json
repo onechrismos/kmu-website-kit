@@ -1,0 +1,30 @@
+{
+  "kit": 1,
+  "name": "FIRMENNAME",
+  "domain": "www.example.ch",
+  "betrieb": "betreuer",
+  "betreuer": "NAME · E-MAIL · TELEFON des Webseiten-Betreuers",
+  "build": {
+    "vorschau": "python build.py",
+    "live": "python build.py --prod"
+  },
+  "out": "dist",
+  "editable": [
+    "content/**",
+    "pages/*.html"
+  ],
+  "structure_locked": [
+    "pages/*.html"
+  ],
+  "protected": [
+    ".kmu/**",
+    ".github/**",
+    ".claude/**",
+    "CLAUDE.md",
+    "build.py",
+    "static/**",
+    ".gitignore",
+    ".gitattributes"
+  ],
+  "deploy_keep": []
+}

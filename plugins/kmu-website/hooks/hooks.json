@@ -1,0 +1,17 @@
+{
+  "description": "Sperrt in Kunden-Webseiten (Ordner mit .kmu/site.json) Änderungen an geschützten Dateien und gefährliche Befehle.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.py\" 2>/dev/null || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

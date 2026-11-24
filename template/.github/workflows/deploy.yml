@@ -1,0 +1,109 @@
+# Veröffentlichen: Bei jedem Push auf main wird gebaut, geprüft und – nur wenn alles stimmt – zu cyon hochgeladen.
+# Rückgängig: entweder normal per "kmu.py rueckgaengig" (neuer Commit -> läuft hier durch)
+#             oder im Notfall: GitHub -> Actions -> "Veröffentlichen" -> "Run workflow" -> alte Version (Commit) eintragen.
+#
+# Einmalig einrichten (GitHub -> Settings -> Secrets and variables -> Actions):
+#   Variables: KMU_KIT_REPO      z. B. dein-github/kmu-website-kit
+#              DEPLOY_HOST       z. B. s076.cyon.net
+#              DEPLOY_USER       cyon-Benutzername
+#              DEPLOY_PATH       Zielordner auf dem Server, z. B. public_html  (nur die Webseite, nichts anderes!)
+#              DEPLOY_MODE       optional: "vorschau" = Testziel (noindex, Platzhalter erlaubt). Leer = live.
+#              DEPLOY_URL        optional: Adresse für den Online-Test, falls nicht die Domain aus .kmu/site.json
+#   Secrets:   DEPLOY_KEY        privater SSH-Schlüssel nur für diesen Zweck (ed25519)
+#              DEPLOY_KNOWN_HOSTS  Ausgabe von: ssh-keyscan -t ed25519 <DEPLOY_HOST>
+#              KMU_KIT_TOKEN     nur nötig, wenn das Kit-Repo privat ist (Fine-grained token, Contents: read)
+name: Veröffentlichen
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Diese Version live schalten (Commit-Kürzel). Leer = neueste."
+        required: false
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Webseite holen
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          fetch-depth: 2
+
+      - name: Prüf-Kit holen
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.KMU_KIT_REPO }}
+          path: .kmu-kit
+          token: ${{ secrets.KMU_KIT_TOKEN || github.token }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Bauen und prüfen
+        env:
+          DEPLOY_MODE: ${{ vars.DEPLOY_MODE }}
+        run: |
+          if [ "$DEPLOY_MODE" = "vorschau" ]; then MODE=""; echo "Vorschau-Ziel: noindex, Platzhalter erlaubt"; else MODE="--live"; fi
+          python .kmu-kit/plugins/kmu-website/skills/webseite-bearbeiten/scripts/check.py $MODE --ci
+
+      - name: Zielordner prüfen
+        env:
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+        run: |
+          case "$DEPLOY_PATH" in
+            ""|"/"|"~"|"."|".."|"~/"|*".."*) echo "DEPLOY_PATH ist leer oder unsicher: '$DEPLOY_PATH'"; exit 1;;
+          esac
+
+      - name: SSH vorbereiten
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf 'Host deploy\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/deploy_key\n  StrictHostKeyChecking yes\n' \
+            "${{ vars.DEPLOY_HOST }}" "${{ vars.DEPLOY_USER }}" > ~/.ssh/config
+
+      - name: Sicherung auf dem Server (die letzten 10 bleiben)
+        env:
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+        run: |
+          ssh deploy "set -e; mkdir -p ~/kmu-backups; chmod 700 ~/kmu-backups; \
+            if [ -d \"$DEPLOY_PATH\" ]; then tar czf ~/kmu-backups/\$(date +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}.tgz -C \"$DEPLOY_PATH\" .; fi; \
+            ls -1t ~/kmu-backups/*.tgz 2>/dev/null | tail -n +11 | xargs -r rm --"
+
+      - name: Hochladen
+        env:
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+        run: |
+          OUT=$(python -c "import json;print(json.load(open('.kmu/site.json')).get('out','dist'))")
+          mapfile -t KEEP < <(python -c "import json;[print('--filter=P '+k) for k in json.load(open('.kmu/site.json')).get('deploy_keep',[])]")
+          rsync -rlz --checksum --delete --delay-updates \
+            --filter='P .well-known/' --filter='P .ftpquota' --filter='P .user.ini' "${KEEP[@]}" \
+            "$OUT/" "deploy:$DEPLOY_PATH/"
+
+      - name: Online-Test
+        env:
+          DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+        run: |
+          URL="$DEPLOY_URL"
+          [ -n "$URL" ] || URL="https://$(python -c "import json;print(json.load(open('.kmu/site.json'))['domain'])")/"
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$URL") && [ "$code" = "200" ] && { echo "OK $URL ($code)"; exit 0; }
+            sleep 5
+          done
+          echo "Webseite antwortet nicht mit 200 (zuletzt: $code)"; exit 1

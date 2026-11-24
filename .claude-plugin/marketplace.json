@@ -1,0 +1,12 @@
+{
+  "name": "kmu-website-kit",
+  "owner": { "name": "Webseiten-Betreuer" },
+  "plugins": [
+    {
+      "name": "kmu-website",
+      "source": "./plugins/kmu-website",
+      "description": "Webseite selber pflegen – sicher, mit Prüfung und Rückgängig-Funktion.",
+      "version": "1.0.0"
+    }
+  ]
+}

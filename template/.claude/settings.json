@@ -1,0 +1,23 @@
+{
+  "extraKnownMarketplaces": {
+    "kmu-website-kit": {
+      "source": { "source": "github", "repo": "onechrismos/kmu-website-kit" }
+    }
+  },
+  "enabledPlugins": {
+    "kmu-website@kmu-website-kit": true
+  },
+  "permissions": {
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean:*)",
+      "Bash(git rebase:*)",
+      "Bash(rm -rf:*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(rsync:*)"
+    ]
+  }
+}
