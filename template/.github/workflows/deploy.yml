@@ -7,7 +7,6 @@
 #              DEPLOY_HOST       z. B. s0XX.cyon.net
 #              DEPLOY_USER       cyon-Benutzername
 #              DEPLOY_PATH       Zielordner auf dem Server, z. B. public_html  (nur die Webseite, nichts anderes!)
-#              DEPLOY_MODE       optional: "vorschau" = Testziel (noindex, Platzhalter erlaubt). Leer = live.
 #              DEPLOY_URL        optional: Adresse für den Online-Test, falls nicht die Domain aus .kmu/site.json
 #   Secrets:   DEPLOY_KEY        privater SSH-Schlüssel nur für diesen Zweck (ed25519)
 #              DEPLOY_KNOWN_HOSTS  Ausgabe von: ssh-keyscan -t ed25519 <DEPLOY_HOST>
@@ -36,28 +35,25 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Webseite holen
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.ref || github.sha }}
           fetch-depth: 2
 
       - name: Prüf-Kit holen
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ vars.KMU_KIT_REPO }}
           path: .kmu-kit
           token: ${{ secrets.KMU_KIT_TOKEN || github.token }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Bauen und prüfen
-        env:
-          DEPLOY_MODE: ${{ vars.DEPLOY_MODE }}
-        run: |
-          if [ "$DEPLOY_MODE" = "vorschau" ]; then MODE=""; echo "Vorschau-Ziel: noindex, Platzhalter erlaubt"; else MODE="--live"; fi
-          python .kmu-kit/plugins/kmu-website/skills/webseite-bearbeiten/scripts/check.py $MODE --ci
+        # Stufe (live/vorschau) steht in .kmu/site.json, check.py liest sie selbst
+        run: python .kmu-kit/plugins/kmu-website/skills/webseite-bearbeiten/scripts/check.py --live --ci
 
       - name: Zielordner prüfen
         env:

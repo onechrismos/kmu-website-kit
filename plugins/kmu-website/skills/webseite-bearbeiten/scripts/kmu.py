@@ -82,7 +82,7 @@ def cmd_publish(root, cfg, msg):
             git("pull", "--ff-only", root=root)
         except RuntimeError:
             pass  # lokale Änderungen sind noch nicht gespeichert; Abgleich unten nach dem Commit
-    print("Prüfe die Live-Version …")
+    print("Prüfe die Webseite …")
     if not run_check(root, live=True):
         sys.exit("✗ Prüfung fehlgeschlagen – NICHT veröffentlicht. Bitte die Meldungen oben beheben.")
     git("add", "--", *editable_specs(cfg), root=root)

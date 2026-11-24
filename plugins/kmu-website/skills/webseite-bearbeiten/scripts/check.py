@@ -2,7 +2,8 @@
 """Prüft eine KMU-Webseite vor dem Veröffentlichen. Läuft lokal (Skill) und in der GitHub Action.
 
   python check.py              Vorschau bauen + prüfen
-  python check.py --live       Live-Version bauen + prüfen (wie beim Veröffentlichen)
+  python check.py --live       Veröffentlichungs-Version bauen + prüfen. Steht in .kmu/site.json
+                               "stufe": "vorschau" (Testziel), wird stattdessen die Vorschau geprüft.
   python check.py --accept     NUR Betreuer (KMU_OWNER=1): aktuellen Stand als "gut" festschreiben
                                (Struktur der Seiten + geschützte Dateien -> .kmu/lock.json)
 
@@ -245,6 +246,10 @@ def main():
     cfg = kmulib.load_site(root)
     if ACCEPT:
         accept(root, cfg); return
+    global LIVE
+    if LIVE and cfg.get("stufe") == "vorschau":
+        LIVE = False
+        print("Hinweis: Diese Webseite ist noch in der Vorschau-Stufe (Testadresse, nicht bei Google).")
     check_firma(root)
     check_lock(root, cfg)
     if run_build(root, cfg):

@@ -6,7 +6,7 @@
       "name": "kmu-website",
       "source": "./plugins/kmu-website",
       "description": "Webseite selber pflegen – sicher, mit Prüfung und Rückgängig-Funktion.",
-      "version": "1.0.0"
+      "version": "1.0.1"
     }
   ]
 }

@@ -19,6 +19,12 @@ Der Kunde bedient Git nie direkt. Der Skill ruft `kmu.py` auf: `start`, `status`
 
 Das Repo ist in beiden Fällen gleich. Ein Wechsel heisst: Feld umstellen (danach `--accept`), Kunde einladen und seinen Rechner einrichten. Willst du die Seite ganz abgeben, überträgst du das GitHub-Repo (Settings → Transfer).
 
+## Stufe (Feld `stufe` in `.kmu/site.json`)
+- **`vorschau`**: Testadresse (z. B. `kmu-test.chrismos.ch`). Gebaut wird mit noindex, gelbe Platzhalter sind erlaubt. Alle anderen Prüfungen gelten.
+- **`live`**: echte Domain. Keine Platzhalter, nicht noindex.
+
+Zum Live-Gang `stufe` auf `live` stellen, `--accept` ausführen, in GitHub `DEPLOY_PATH` auf den echten Ordner und `DEPLOY_URL` auf die echte Adresse setzen (oder löschen) und pushen.
+
 ## Was der Kunde ändern kann
 - `content/firma.json`: Name, Adresse, Telefon, E-Mail, Öffnungszeiten (erscheinen automatisch in Kontakt, Fuss, FAQ, Google-Daten und «Jetzt geöffnet»), Hinweis-Balken mit Ablaufdatum
 - `pages/*.html`: nur Text zwischen den Tags, sowie Titel/Beschreibung in der ersten Zeile
@@ -49,5 +55,4 @@ In deinen persönlichen Claude-Einstellungen (`~/.claude/settings.json`) `"env":
 
 ## Noch nicht erledigt
 - Noch nicht in einer echten Claude-Code-Installation als Plugin installiert (Hook-Aufruf über `${CLAUDE_PLUGIN_ROOT}` und automatische Plugin-Aktivierung über `.claude/settings.json` noch prüfen).
-- GitHub Action noch nicht gegen cyon gelaufen. Zu prüfen: rsync und ein dauerhafter SSH-Schlüssel für den Account.
 - Ideen für später: Bilder austauschen (mit automatischer WebP-Umwandlung), wiederholbare Blöcke (Team, FAQ, News) über JSON statt HTML.

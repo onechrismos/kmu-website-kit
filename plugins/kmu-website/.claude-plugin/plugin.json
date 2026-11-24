@@ -1,6 +1,6 @@
 {
   "name": "kmu-website",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Webseite selber pflegen: Texte, Öffnungszeiten, Kontaktdaten und Hinweise sicher ändern, prüfen, veröffentlichen und rückgängig machen. Design und Technik sind geschützt.",
   "author": { "name": "Webseiten-Betreuer" },
   "keywords": ["website", "kmu", "content"]

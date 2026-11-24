@@ -3,6 +3,7 @@
   "name": "FIRMENNAME",
   "domain": "www.example.ch",
   "betrieb": "betreuer",
+  "stufe": "live",
   "betreuer": "NAME · E-MAIL · TELEFON des Webseiten-Betreuers",
   "build": {
     "vorschau": "python build.py",
