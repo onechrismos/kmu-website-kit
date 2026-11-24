@@ -6,7 +6,7 @@
   python kmu.py veroeffentlichen "Text"    prüfen (live) -> speichern -> hochladen (geht dann automatisch online)
   python kmu.py verwerfen                  noch nicht veröffentlichte Änderungen verwerfen
   python kmu.py verlauf                    letzte 15 Versionen anzeigen
-  python kmu.py rueckgaengig [VERSION]     eine veröffentlichte Version rückgängig machen (Standard: die letzte)
+  python kmu.py rueckgaengig [VERSION]     eine eigene Änderung rückgängig machen (Standard: die letzte eigene; Betreuer-Änderungen nie)
 """
 import sys, subprocess, pathlib, re
 
@@ -119,11 +119,42 @@ def cmd_log(root, cfg):
     print(git("log", "-15", "--date=format:%d.%m.%Y %H:%M", "--pretty=format:%h  %ad  %an  –  %s", root=root))
 
 
+def commit_files(root, rev):
+    out = git("diff-tree", "--no-commit-id", "--name-only", "-r", "-m", "--first-parent", rev, root=root)
+    return [f for f in out.splitlines() if f.strip()]
+
+
+def is_customer_change(root, cfg, rev):
+    """Nur Kunden-Änderungen (ausschliesslich erlaubte, nicht geschützte Dateien) dürfen rückgängig gemacht werden."""
+    files = commit_files(root, rev)
+    return bool(files) and all(kmulib.is_editable(cfg, f) and not kmulib.is_protected(cfg, f) for f in files)
+
+
+def last_customer_change(root, cfg):
+    reverted = set()
+    for sha in git("rev-list", "--no-merges", "-n", "100", "HEAD", root=root).split():
+        body = git("log", "-1", "--pretty=%B", sha, root=root)
+        m = re.search(r"This reverts commit ([0-9a-f]{40})", body)
+        if m:
+            reverted.add(m.group(1)); continue
+        if sha in reverted:
+            continue
+        if is_customer_change(root, cfg, sha):
+            return sha
+    return None
+
+
 def cmd_undo(root, cfg, rev="HEAD"):
     if not re.fullmatch(r"[0-9a-fA-F]{6,40}|HEAD", rev):
         sys.exit("Version bitte als Kürzel aus 'verlauf' angeben, z. B. a1b2c3d.")
     if [f for f in changed_files(root) if not f.startswith(cfg["out"] + "/")]:
         sys.exit("Es gibt noch offene Änderungen. Zuerst veröffentlichen oder verwerfen.")
+    if rev == "HEAD":
+        rev = last_customer_change(root, cfg)
+        if not rev:
+            sys.exit("Keine eigene Änderung gefunden, die sich rückgängig machen lässt.")
+    elif not is_customer_change(root, cfg, rev):
+        sys.exit("✗ Diese Version enthält Änderungen des Betreuers (Design/Technik) und kann nur von ihm rückgängig gemacht werden. Bitte Betreuer informieren.")
     subj = git("log", "-1", "--pretty=%s", rev, root=root)
     if len(git("rev-list", "--parents", "-n", "1", rev, root=root).split()) > 2:
         r = subprocess.run(["git", "revert", "--no-edit", "-m", "1", rev], cwd=root, capture_output=True, text=True)
