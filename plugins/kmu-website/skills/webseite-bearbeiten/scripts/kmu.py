@@ -101,8 +101,8 @@ def cmd_publish(root, cfg, msg):
             sys.exit("✗ Nach dem Zusammenführen schlägt die Prüfung fehl. NICHT online. Bitte Betreuer informieren.")
         git("push", root=root)
         sha = git("rev-parse", "--short", "HEAD", root=root)
-    dom = cfg.get("domain", "")
-    print(f"✓ Veröffentlicht (Version {sha}). In ca. 1–2 Minuten online" + (f": https://{dom}/" if dom else "."))
+    url = cfg.get("vorschau_url") if cfg.get("stufe") == "vorschau" else (f"https://{cfg['domain']}/" if cfg.get("domain") else "")
+    print(f"✓ Veröffentlicht (Version {sha}). In ca. 1–2 Minuten online" + (f": {url}" if url else "."))
     print("  Falls etwas nicht stimmt: 'mach das rückgängig' sagen.")
 
 

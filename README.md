@@ -20,7 +20,7 @@ Der Kunde bedient Git nie direkt. Der Skill ruft `kmu.py` auf: `start`, `status`
 Das Repo ist in beiden Fällen gleich. Ein Wechsel heisst: Feld umstellen (danach `--accept`), Kunde einladen und seinen Rechner einrichten. Willst du die Seite ganz abgeben, überträgst du das GitHub-Repo (Settings → Transfer).
 
 ## Stufe (Feld `stufe` in `.kmu/site.json`)
-- **`vorschau`**: Testadresse (z. B. `kmu-test.chrismos.ch`). Gebaut wird mit noindex, gelbe Platzhalter sind erlaubt. Alle anderen Prüfungen gelten.
+- **`vorschau`**: Testadresse (in `vorschau_url`, z. B. `https://kmu-test.chrismos.ch/`). Gebaut wird mit noindex, gelbe Platzhalter sind erlaubt. Alle anderen Prüfungen gelten.
 - **`live`**: echte Domain. Keine Platzhalter, nicht noindex.
 
 Zum Live-Gang `stufe` auf `live` stellen, `--accept` ausführen, in GitHub `DEPLOY_PATH` auf den echten Ordner und `DEPLOY_URL` auf die echte Adresse setzen (oder löschen) und pushen.
